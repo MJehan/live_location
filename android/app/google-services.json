@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "896243043926",
+    "project_id": "live-location-e24fa",
+    "storage_bucket": "live-location-e24fa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896243043926:android:07667968b8901ffa1975f7",
+        "android_client_info": {
+          "package_name": "com.example.live_location"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "896243043926-6o4g2ln46nf84n3af3kd913amnnsof33.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmSQQAw6Da35J81XNxZBXs_P_5kXlBZfU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "896243043926-6o4g2ln46nf84n3af3kd913amnnsof33.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
