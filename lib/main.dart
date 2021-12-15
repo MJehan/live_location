@@ -88,9 +88,10 @@ class _MyAppState extends State<MyApp> {
                               //print('value_test${snapshot.data!.docs[index].id}');
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
-                                      MapScreen(
-                                        snapshot.data!.docs[index].id,
-                                      ),
+                                      //MapSample() //List Marker
+                                       MapScreen(       //Single marker
+                                         snapshot.data!.docs[index].id,
+                                       ),
                               ));
                             },
                           ),
@@ -106,7 +107,7 @@ class _MyAppState extends State<MyApp> {
   _getLocation() async {
     try {
       final loc.LocationData _locationResult = await location.getLocation();
-      await FirebaseFirestore.instance.collection('location').doc('Docsid').set({
+      await FirebaseFirestore.instance.collection('location').doc('DocsId').set({
         'latitude': _locationResult.latitude,
         'longitude': _locationResult.longitude,
         'name': 'Jehan'
