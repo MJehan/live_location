@@ -6,6 +6,46 @@ import 'package:location/location.dart' as loc;
 import 'package:location/location.dart';
 
 
+//
+// class MapScreen extends StatefulWidget {
+//   const MapScreen({Key? key}) : super(key: key);
+//
+//   @override
+//   _MapScreenState createState() => _MapScreenState();
+// }
+//
+// class _MapScreenState extends State<MapScreen> {
+//   late GoogleMapController _controller;
+//   bool _added = false;
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: StreamBuilder(
+//         stream: FirebaseFirestore.instance.collection('location').snapshots(),
+//         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot)
+//         {
+//           if(_added)
+//           {
+//             map(snapshot);
+//           }
+//         },
+//       ),
+//     );
+//   }
+//   Future<void> map(AsyncSnapshot<QuerySnapshot> snapshot) async{
+//     await _controller.animateCamera(
+//         CameraUpdate.newCameraPosition(CameraPosition(
+//             target:LatLng(
+//                 snapshot.data!.docs.singleWhere(
+//                         (element) => element.id == widget.user_id)['latitude'],
+//                 snapshot.data!.docs.singleWhere(
+//                         (element) => element.id == widget.user_id)['longitude']
+//             ),zoom: 14.47))
+//     );
+//   }
+// } final loc.Location Location = loc.Location();
+//
+
 //-------------Single Marker------------------
 class MapScreen extends StatefulWidget {
   final String user_id;
@@ -86,7 +126,7 @@ class _MapScreenState extends State<MapScreen>  {
 
 
 
-//------------------------List Marker------------------------
+// ------------------------List Marker------------------------
 // class MapSample extends StatefulWidget {
 //   @override
 //   State<MapSample> createState() => MapSampleState();
@@ -114,7 +154,7 @@ class _MapScreenState extends State<MapScreen>  {
 //     // creating a new MARKER
 //     final Marker marker = Marker(
 //       markerId: markerId,
-//       position: LatLng(index['Latitud'], index['Longitud']),
+//       position: LatLng(index['Latitude'], index['Longitude']),
 //       infoWindow: InfoWindow(title: index['name']),
 //     );
 //
