@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:html';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -47,83 +48,82 @@ import 'package:location/location.dart';
 //
 
 //-------------Single Marker------------------
-class MapScreen extends StatefulWidget {
-  final String user_id;
-  const MapScreen(this.user_id);
-  @override
-  _MapScreenState createState() => _MapScreenState();
-}
-
-class _MapScreenState extends State<MapScreen>  {
-  final loc.Location Location = loc.Location();
-  late GoogleMapController _controller;
-  bool _added = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: StreamBuilder(
-          stream: FirebaseFirestore.instance.collection('location').snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot)
-          {
-            if(_added)
-            {
-              map(snapshot);
-            }
-            if(!snapshot.hasData)
-            {
-              return const Center(child: CircularProgressIndicator());
-            }
-            return GoogleMap(
-              mapType: MapType.normal,
-              markers: {
-                Marker(
-                  position: LatLng(
-                    snapshot.data!.docs.singleWhere(
-                            (element) => element.id == widget.user_id)['latitude'],
-                    snapshot.data!.docs.singleWhere(
-                            (element) => element.id == widget.user_id)['longitude'],
-                  ),
-                  infoWindow: const InfoWindow(title: 'Hello I am Here..!!!'),
-                  markerId: const MarkerId('id'),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueMagenta,
-                  ),
-                ),
-              },
-              initialCameraPosition: CameraPosition(
-                  target: LatLng(
-                      snapshot.data!.docs.singleWhere(
-                              (element) => element.id == widget.user_id)['latitude'],
-                      snapshot.data!.docs.singleWhere(
-                              (element) => element.id == widget.user_id)['longitude']
-                  ),zoom: 14.47
-              ),
-              onMapCreated: (GoogleMapController controller) async{
-                setState(() {
-                  _controller = controller;
-                  _added = true;
-                });
-              },
-            );
-          }
-      ),
-    );
-  }
-
-  Future<void> map(AsyncSnapshot<QuerySnapshot> snapshot) async{
-    await _controller.animateCamera(
-        CameraUpdate.newCameraPosition(CameraPosition(
-            target:LatLng(
-                snapshot.data!.docs.singleWhere(
-                        (element) => element.id == widget.user_id)['latitude'],
-                snapshot.data!.docs.singleWhere(
-                        (element) => element.id == widget.user_id)['longitude']
-            ),zoom: 14.47))
-    );
-  }
-}
-
+// class MapScreen extends StatefulWidget {
+//   final String user_id;
+//   const MapScreen(this.user_id);
+//   @override
+//   _MapScreenState createState() => _MapScreenState();
+// }
+//
+// class _MapScreenState extends State<MapScreen>  {
+//   final loc.Location Location = loc.Location();
+//   late GoogleMapController _controller;
+//   bool _added = false;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: StreamBuilder(
+//           stream: FirebaseFirestore.instance.collection('location').snapshots(),
+//           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot)
+//           {
+//             if(_added)
+//             {
+//               map(snapshot);
+//             }
+//             if(!snapshot.hasData)
+//             {
+//               return const Center(child: CircularProgressIndicator());
+//             }
+//             return GoogleMap(
+//               mapType: MapType.normal,
+//               markers: {
+//                 Marker(
+//                   position: LatLng(
+//                     snapshot.data!.docs.singleWhere(
+//                             (element) => element.id == widget.user_id)['latitude'],
+//                     snapshot.data!.docs.singleWhere(
+//                             (element) => element.id == widget.user_id)['longitude'],
+//                   ),
+//                   infoWindow: const InfoWindow(title: 'Hello I am Here..!!!'),
+//                   markerId: const MarkerId('id'),
+//                   icon: BitmapDescriptor.defaultMarkerWithHue(
+//                     BitmapDescriptor.hueMagenta,
+//                   ),
+//                 ),
+//               },
+//               initialCameraPosition: CameraPosition(
+//                   target: LatLng(
+//                       snapshot.data!.docs.singleWhere(
+//                               (element) => element.id == widget.user_id)['latitude'],
+//                       snapshot.data!.docs.singleWhere(
+//                               (element) => element.id == widget.user_id)['longitude']
+//                   ),zoom: 14.47
+//               ),
+//               onMapCreated: (GoogleMapController controller) async{
+//                 setState(() {
+//                   _controller = controller;
+//                   _added = true;
+//                 });
+//               },
+//             );
+//           }
+//       ),
+//     );
+//   }
+//
+//   Future<void> map(AsyncSnapshot<QuerySnapshot> snapshot) async{
+//     await _controller.animateCamera(
+//         CameraUpdate.newCameraPosition(CameraPosition(
+//             target:LatLng(
+//                 snapshot.data!.docs.singleWhere(
+//                         (element) => element.id == widget.user_id)['latitude'],
+//                 snapshot.data!.docs.singleWhere(
+//                         (element) => element.id == widget.user_id)['longitude']
+//             ),zoom: 14.47))
+//     );
+//   }
+// }
 
 
 // ------------------------List Marker------------------------
@@ -211,4 +211,96 @@ class _MapScreenState extends State<MapScreen>  {
 //     );
 //   }
 // }
-//
+
+
+
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final textcontroller = TextEditingController();
+  final databaseRef = FirebaseFirestore.instance.collection('location');
+  Completer<GoogleMapController> _controller = Completer();
+  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+
+  double latitude = 0;
+  double longitude = 0;
+  var myList = [];
+  List<LatLng> list = [];
+
+  void initState() {
+    super.initState();
+    setState(() {
+      firebaseRead();
+    });
+  }
+
+  void firebaseRead() {
+    FirebaseFirestore.instance.collection('location').onValue.listen((Event event) {
+      myList = event.snapshot.value;
+      setState(() {
+        for (int x = 0; x < myList.length; x++) {
+          double latitude = myList[x]['lat'];
+          double longitude = myList[x]['long'];
+          LatLng location = new LatLng(latitude, longitude);
+          if (list.contains(location)) {
+            list.clear();
+            list.add(location);
+          } else {
+            list.add(location);
+          }
+
+          //Passing a dynamic marker id as the index here.
+          addMarker(list[x], x);
+        }
+      });
+    });
+    //print(list);
+  }
+
+//Adding Index here as an argument
+  void addMarker(loc, index) {
+    //Making this markerId dynamic
+    final MarkerId markerId = MarkerId('Marker $index');
+
+    final Marker marker = Marker(
+      markerId: markerId,
+      position: LatLng(loc.latitude, loc.longitude),
+      infoWindow: InfoWindow(title: 'test'),
+    );
+
+    setState(() {
+      // adding a new marker to map
+      markers[markerId] = marker;
+      //print(marker);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Firebase Demo"),
+      ),
+      body: GoogleMap(
+        mapType: MapType.normal,
+        markers: Set.of(markers.values),
+        initialCameraPosition:
+        CameraPosition(target: LatLng(6.9271, 79.8612), zoom: 15),
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          firebaseRead();
+        },
+        label: const Text('Refresh'),
+        icon: const Icon(Icons.refresh),
+        backgroundColor: Colors.blueAccent,
+      ),
+    );
+  }
+}
