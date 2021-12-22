@@ -238,7 +238,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void firebaseRead() {
-    FirebaseFirestore.instance.collection('location').onValue.listen((Event event) {
+    FirebaseFirestore.instance.collection('location').snapshots();
+
+      ((Event event) {
       myList = event.snapshot.value;
       setState(() {
         for (int x = 0; x < myList.length; x++) {
@@ -281,9 +283,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Firebase Demo"),
-      ),
       body: GoogleMap(
         mapType: MapType.normal,
         markers: Set.of(markers.values),
